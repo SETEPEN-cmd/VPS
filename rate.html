@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<style>
+body {
+    background: #0f0f0f;
+    font-family: 'Segoe UI', sans-serif;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .auth-box {
+    background: #1a1a1a;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    width: 320px;
+  }
+  
+  .auth-box h2 {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  input {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0;
+    border-radius: 6px;
+    border: none;
+    background: #2a2a2a;
+    color: white;
+  }
+  
+  button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 6px;
+    background: #4caf50;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  button.google {
+    background: #db4437;
+  }
+  
+  button.discord {
+    background: #5865f2;
+  }
+  
+  .oauth {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .error {
+    color: #ff4d4d;
+    font-size: 0.9rem;
+    text-align: center;
+  }
+</style  
+<body>
+  <div class="signin-container">
+    <h2>Buat Akun Baru</h2>
+    <form id="signup-form">
+      <input type="text" id="username" placeholder="Username" required />
+      <input type="email" id="email" placeholder="E-mail" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <input type="password" id="root" placeholder="Root Password" required />
+      <button type="submit">Daftar</button>
+    </form>
+
+    <hr />
+    <div class="oauth-options">
+      <button onclick="window.location='/auth/google'">Lanjutkan dengan Google</button>
+      <button onclick="window.location='/auth/discord'">Lanjutkan dengan Discord</button>
+    </div>
+
+    <p id="message"></p>
+  </div>
+
+  <script>
+    document.getElementById('signup-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const root = document.getElementById('root').value;
+      const message = document.getElementById('message');
+
+      message.textContent = 'Mengecek data...';
+
+      // Validasi username ke namemc
+      const isValidMC = await fetch(`/check-mc?username=${encodeURIComponent(username)}`)
+        .then(res => res.json());
+
+      if (!isValidMC.valid) {
+        message.textContent = 'Username bukan akun Minecraft original!';
+        return;
+      }
+
+      // Kirim ke server untuk validasi email/username dan simpan
+      const res = await fetch('/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password, root })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        message.textContent = 'Akun berhasil dibuat!';
+        setTimeout(() => window.location = '/panel/main', 1000);
+      } else {
+        message.textContent = data.message || 'Gagal membuat akun';
+      }
+    });
+  </script>
+</body>
+</html>

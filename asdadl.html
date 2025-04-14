@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donasi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            padding: 20px;
+        }
+        h1 {
+            color: #007BFF;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0 20px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .qr-code {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Form Donasi</h1>
+        <form id="donateForm">
+            <!-- Nama Lengkap -->
+            <label for="fullName">Nama Lengkap</label>
+            <input type="text" id="fullName" name="fullName" required placeholder="Masukkan nama lengkap">
+
+            <!-- Nominal Donasi -->
+            <label for="amount">Nominal Donasi (IDR)</label>
+            <input type="number" id="amount" name="amount" required placeholder="Masukkan nominal donasi" min="1">
+
+            <!-- Pilihan Metode Pembayaran -->
+            <label for="paymentMethod">Metode Pembayaran</label>
+            <select id="paymentMethod" name="paymentMethod" required>
+                <option value="qris">QRIS</option>
+                <option value="gopay">Gopay</option>
+                <option value="ovo">OVO</option>
+                <option value="dana">Dana</option>
+                <option value="linkaja">Link Aja</option>
+            </select>
+
+            <!-- Tombol Kirim -->
+            <button type="submit">Lanjutkan Donasi</button>
+        </form>
+
+        <!-- Menampilkan QR Code setelah submit -->
+        <div id="qrCodeSection" class="qr-code" style="display: none;">
+            <h3>Scan QR Code untuk Donasi</h3>
+            <img id="qrCodeImage" src="" alt="QR Code" />
+        </div>
+    </div>
+
+    <script>
+        // Script untuk mengarahkan dan menampilkan QR Code
+        const form = document.getElementById("donateForm");
+        const qrCodeSection = document.getElementById("qrCodeSection");
+        const qrCodeImage = document.getElementById("qrCodeImage");
+
+        form.addEventListener("submit", function(event) {
+            event.preventDefault(); // Mencegah form submit secara default
+
+            // Ambil data dari form
+            const amount = document.getElementById("amount").value;
+            const paymentMethod = document.getElementById("paymentMethod").value;
+
+            // Menentukan informasi rekening dan data pembayaran untuk QRIS
+            const receiverAccount = "rekening123";  // Ganti dengan rekening atau kode QRIS yang valid
+            const donationData = {
+                nominal: amount,
+                receiver: receiverAccount,
+            };
+
+            // Generate URL QRIS untuk pembayaran
+            const qrisUrl = `https://api.qr-code-generator.com/generate?amount=${donationData.nominal}&receiver=${donationData.receiver}`;
+
+            // Menampilkan QR Code untuk pembayaran
+            qrCodeImage.src = qrisUrl;
+            qrCodeSection.style.display = "block"; // Menampilkan QR Code Section
+
+            // Tambahkan log atau informasi lain yang diperlukan di sini
+        });
+    </script>
+</body>
+</html>
